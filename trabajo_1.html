@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Registros</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table, .table th, .table td {
+            border: 1px solid #ddd;
+        }
+        .table th, .table td {
+            padding: 10px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .action-buttons i {
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .form-section {
+            margin-top: 20px;
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn" onclick="toggleForm('create')">Crear Registro</button>
+
+        <div class="form-section" id="createForm">
+            <h3>Nuevo Registro</h3>
+            <div class="form-group">
+                <label for="createName">Nombre</label>
+                <input type="text" id="createName">
+            </div>
+            <div class="form-group">
+                <label for="createEmail">Correo</label>
+                <input type="email" id="createEmail">
+            </div>
+            <div class="form-group">
+                <label for="createCity">Ciudad</label>
+                <input type="text" id="createCity">
+            </div>
+            <div class="form-group">
+                <label for="createPostalCode">Código Postal</label>
+                <input type="text" id="createPostalCode">
+            </div>
+            <div class="form-group">
+                <label for="createPhone">Número de Teléfono</label>
+                <input type="tel" id="createPhone">
+            </div>
+            <button class="btn" onclick="createRecord()">Guardar</button>
+        </div>
+
+        <div class="form-section" id="updateForm">
+            <h3>Actualizar Registro</h3>
+            <div class="form-group">
+                <label for="updateName">Nombre</label>
+                <input type="text" id="updateName">
+            </div>
+            <div class="form-group">
+                <label for="updateEmail">Correo</label>
+                <input type="email" id="updateEmail">
+            </div>
+            <div class="form-group">
+                <label for="updateCity">Ciudad</label>
+                <input type="text" id="updateCity">
+            </div>
+            <div class="form-group">
+                <label for="updatePostalCode">Código Postal</label>
+                <input type="text" id="updatePostalCode">
+            </div>
+            <div class="form-group">
+                <label for="updatePhone">Número de Teléfono</label>
+                <input type="tel" id="updatePhone">
+            </div>
+            <button class="btn" onclick="updateRecord()">Actualizar</button>
+        </div>
+
+        <table class="table" id="recordsTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Ciudad</th>
+                    <th>Código Postal</th>
+                    <th>Número de Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let records = [];
+        function toggleForm(type) {
+            if (type === 'create') {
+                document.getElementById('createForm').classList.toggle('active');
+                document.getElementById('updateForm').classList.remove('active');
+                document.getElementById('recordsTable').style.display = 'none';
+            } else {
+                document.getElementById('updateForm').classList.toggle('active');
+                document.getElementById('createForm').classList.remove('active');
+            }
+        }
+
+        function createRecord() {
+            const name = document.getElementById('createName').value;
+            const email = document.getElementById('createEmail').value;
+            const city = document.getElementById('createCity').value;
+            const postalCode = document.getElementById('createPostalCode').value;
+            const phone = document.getElementById('createPhone').value;
+
+            if (name && email && city && postalCode && phone) {
+                records.push({ name, email, city, postalCode, phone });
+                displayTable();
+                clearForm('create');
+            }
+        }
+
+        function displayTable() {
+            const tableBody = document.getElementById('recordsTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            records.forEach((record, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${record.name}</td>
+                    <td>${record.email}</td>
+                    <td>${record.city}</td>
+                    <td>${record.postalCode}</td>
+                    <td>${record.phone}</td>
+                    <td class="action-buttons">
+                        <i class="fas fa-edit" onclick="editRecord(${index})"></i>
+                        <i class="fas fa-trash" onclick="deleteRecord(${index})"></i>
+                    </td>
+                `;
+            });
+
+            document.getElementById('recordsTable').style.display = 'table';
+            document.getElementById('createForm').classList.remove('active');
+        }
+
+        function editRecord(index) {
+            const record = records[index];
+            document.getElementById('updateName').value = record.name;
+            document.getElementById('updateEmail').value = record.email;
+            document.getElementById('updateCity').value = record.city;
+            document.getElementById('updatePostalCode').value = record.postalCode;
+            document.getElementById('updatePhone').value = record.phone;
+
+            toggleForm('update');
+            document.getElementById('updateForm').setAttribute('data-index', index);
+        }
+
+        function updateRecord() {
+            const index = document.getElementById('updateForm').getAttribute('data-index');
+            const name = document.getElementById('updateName').value;
+            const email = document.getElementById('updateEmail').value;
+            const city = document.getElementById('updateCity').value;
+            const postalCode = document.getElementById('updatePostalCode').value;
+            const phone = document.getElementById('updatePhone').value;
+
+            if (name && email && city && postalCode && phone) {
+                records[index] = { name, email, city, postalCode, phone };
+                displayTable();
+                clearForm('update');
+            }
+        }
+
+        function deleteRecord(index) {
+            records.splice(index, 1);
+            displayTable();
+        }
+
+        function clearForm(type) {
+            if (type === 'create') {
+                document.getElementById('createName').value = '';
+                document.getElementById('createEmail').value = '';
+                document.getElementById('createCity').value = '';
+                document.getElementById('createPostalCode').value = '';
+                document.getElementById('createPhone').value = '';
+            } else {
+                document.getElementById('updateName').value = '';
+                document.getElementById('updateEmail').value = '';
+                document.getElementById('updateCity').value = '';
+                document.getElementById('updatePostalCode').value = '';
+                document.getElementById('updatePhone').value = '';
+            }
+        }
+
+        displayTable();
+    </script>
+</body>
+</html>
